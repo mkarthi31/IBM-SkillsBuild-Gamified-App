@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>My Friends</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .navbar {
+            background-color: #007bff;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        .navbar .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+        .container {
+            max-width: 1000px;
+            margin: 3rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #007bff;
+        }
+        .friend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            justify-items: center;
+        }
+        .friend-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            max-width: 300px;
+        }
+        .friend-card h2 {
+            color: #007bff;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .btn {
+            padding: 8px 14px;
+            font-size: 14px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+            text-align: center;
+        }
+        .btn-unfriend {
+            background-color: #dc3545;
+        }
+        .btn-accept {
+            background-color: #28a745;
+        }
+        .btn-decline {
+            background-color: #dc3545;
+        }
+        .btn:hover {
+            opacity: 0.8;
+        }
+        .find-friends {
+            display: inline-block;
+            padding: 10px 16px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 2rem;
+            text-align: center;
+        }
+        .find-friends:hover {
+            background-color: #0056b3;
+        }
+        .find-friends-container {
+            text-align: center;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/" class="logo">Group 34</a>
+    <div class="nav-links">
+        <a href="/welcome" sec:authorize="isAuthenticated()">Dashboard</a>
+        <a href="/login" sec:authorize="!isAuthenticated()">Login</a>
+        <a href="/register" sec:authorize="!isAuthenticated()">Sign Up</a>
+        <a href="/logout" sec:authorize="isAuthenticated()">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>My Friends</h1>
+
+    <div class="friend-grid">
+        <div th:each="friend : ${friends}" class="friend-card">
+            <h2 th:text="${friend.username}"></h2>
+            <form th:action="@{/friends/unfriend/{username}(username=${friend.username})}" method="post">
+                <button type="submit" class="btn btn-unfriend">Unfriend</button>
+            </form>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(friends)}">
+        <p style="text-align: center;">You have no friends yet. Send some friend requests!</p>
+    </div>
+
+    <h1>Friend Requests</h1>
+
+    <div class="friend-grid">
+        <div th:each="request : ${pendingRequests}" class="friend-card">
+            <h2 th:text="${request.sender.username}"></h2>
+            <form th:action="@{/friends/accept/{id}(id=${request.id})}" method="post" style="width: 100%;">
+                <button type="submit" class="btn btn-accept">Accept</button>
+            </form>
+            <form th:action="@{/friends/reject/{id}(id=${request.id})}" method="post" style="width: 100%; margin-top: 5px;">
+                <button type="submit" class="btn btn-decline">Decline</button>
+            </form>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(pendingRequests)}">
+        <p style="text-align: center;">No pending friend requests.</p>
+    </div>
+
+    <div class="find-friends-container">
+        <a href="/search" sec:authorize="isAuthenticated()" class="find-friends">Find Friends</a>
+    </div>
+</div>
+
+</body>
+</html>

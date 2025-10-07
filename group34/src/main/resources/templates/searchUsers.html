@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Search Users</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f9; }
+        .navbar { background-color: #007bff; padding: 1rem; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .navbar .logo { font-size: 1.5rem; font-weight: bold; color: white; text-decoration: none; }
+        .nav-links { display: flex; gap: 1rem; align-items: center; }
+        .nav-links a { color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; background-color: rgba(255, 255, 255, 0.2); }
+        .nav-links a:hover { background-color: rgba(255, 255, 255, 0.4); }
+        .container { max-width: 600px; margin: 3rem auto; padding: 2rem; background: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        h2 { text-align: center; color: #007bff; }
+        form { display: flex; gap: 1rem; margin-bottom: 2rem; }
+        input[type="text"] { padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
+        button { background-color: #007bff; color: white; padding: 0.75rem; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
+        button:hover { background-color: #0056b3; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { border: 1px solid #ddd; padding: 0.75rem; text-align: left; }
+        th { background-color: #007bff; color: white; }
+        .btn-add { background-color: #28a745; padding: 8px 12px; border: none; cursor: pointer; border-radius: 4px; color: white; }
+        .btn-add:hover { background-color: #218838; }
+        .btn-disabled {
+            padding: 6px 12px;
+            font-size: 14px;
+            background-color: #ccc;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/" class="logo">Group 34</a>
+    <div class="nav-links">
+        <a href="/welcome" sec:authorize="isAuthenticated()">Dashboard</a>
+        <a href="/login" sec:authorize="!isAuthenticated()">Login</a>
+        <a href="/register" sec:authorize="!isAuthenticated()">Sign Up</a>
+        <a href="/logout" sec:authorize="isAuthenticated()">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h2>Find Users</h2>
+
+    <form th:action="@{/search}" method="get">
+        <input type="text" name="query" th:value="${searchQuery}" placeholder="Search users...">
+        <button type="submit">Search</button>
+    </form>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Username</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.username}"></td>
+            <td>
+                <span th:if="${userStatuses[user.username] == 'friends'}">
+                    <button class="btn" style="background-color: mediumpurple; cursor: not-allowed;" disabled>Friends</button>
+                </span>
+
+                <span th:if="${userStatuses[user.username] == 'pending'}">
+                    <button class="btn" style="background-color: darkred; cursor: not-allowed;" disabled>Pending</button>
+                </span>
+
+                <span th:if="${userStatuses[user.username] == 'add'}">
+                    <form th:action="@{/friends/request}" method="post">
+                        <input type="hidden" name="receiverUsername" th:value="${user.username}">
+                        <button type="submit" class="btn btn-add">Add Friend</button>
+                    </form>
+                </span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

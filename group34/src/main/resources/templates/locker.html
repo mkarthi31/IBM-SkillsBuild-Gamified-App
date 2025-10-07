@@ -1,0 +1,117 @@
+<!-- locker.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>My Locker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 0;
+    }
+    .navbar {
+      background-color: #007bff;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+    }
+    .navbar .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: white;
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      background-color: rgba(255,255,255,0.2);
+    }
+    .nav-links a:hover {
+      background-color: rgba(255,255,255,0.4);
+    }
+    .container {
+      max-width: 800px;
+      margin: 3rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #007bff;
+    }
+    .border-options {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .border-option {
+      padding: 1rem;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      text-align: center;
+      width: 120px;
+    }
+    .border-option.selected {
+      border-color: #007bff;
+    }
+    .border-option.locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    /* Style the submit button to look like a border option without extra styling */
+    .border-button {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="/" class="logo">Group 34</a>
+  <div class="nav-links">
+    <a href="/welcome" sec:authorize="isAuthenticated()">Dashboard</a>
+    <a href="/logout" sec:authorize="isAuthenticated()">Logout</a>
+  </div>
+</nav>
+<div class="container">
+  <h1>My Locker</h1>
+  <p>Select a border for your profile picture:</p>
+  <div class="border-options">
+    <div th:each="option : ${borderOptions}"
+         th:class="'border-option ' + (${option.unlocked} ? '' : 'locked') + ' ' + (${selectedBorder} == option.color ? 'selected' : '')">
+
+      <div th:if="${option.unlocked}">
+        <!-- Wrap in a form so clicking submits a POST request -->
+        <form th:action="@{/locker/select}" method="post">
+          <input type="hidden" name="borderColor" th:value="${option.color}" />
+          <button type="submit" class="border-button">
+            <p th:text="${option.color}"></p>
+          </button>
+        </form>
+      </div>
+      <div th:if="${!option.unlocked}">
+        <p th:text="${option.color}"></p>
+        <p style="font-size:0.8rem;">Locked</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

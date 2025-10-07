@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Management</title>
+    <style>
+        /* General Page Styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            background-color: #007bff;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .navbar .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Centered Form Container */
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        /* Form Styling */
+        h1, h3 {
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        button {
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Success and Error Messages */
+        .success-message {
+            color: green;
+            font-weight: bold;
+        }
+
+        .error-message {
+            color: red;
+            font-weight: bold;
+        }
+
+        /* File Input Styling */
+        .file-input-container {
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Simple file input box */
+        .file-input-container input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <a href="/" class="logo">Group 34</a>
+    <div class="nav-links">
+        <a href="/welcome" sec:authorize="isAuthenticated()">Dashboard</a>
+        <a href="/login" sec:authorize="!isAuthenticated()">Login</a>
+        <a href="/register" sec:authorize="!isAuthenticated()">Sign Up</a>
+        <a href="/logout" sec:authorize="isAuthenticated()">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>Change Details</h1>
+
+    <div th:if="${success}" class="success-message">
+        <p th:text="${success}"></p>
+    </div>
+    <br>
+    <!-- Change Username -->
+    <h3>Change Username</h3>
+    <form th:action="@{/account/username}" method="post">
+        <input type="text" name="newUsername" placeholder="New Username" required />
+        <div th:if="${duplicate}" class="error-message">
+            <p th:text="${duplicate}"></p>
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+    <br>
+    <!-- Change Password -->
+    <h3>Change Password</h3>
+    <form th:action="@{/account/password}" method="post">
+        <input type="password" name="oldPassword" placeholder="Current Password" required/>
+        <div th:if="${error}" class="error-message">
+            <p th:text="${error}"></p>
+        </div>
+        <input type="password" name="newPassword" placeholder="New Password" required />
+        <button type="submit">Submit</button>
+    </form>
+    <br><br>
+    <!-- Change Profile Picture -->
+    <h3>Change Profile Picture</h3>
+    <form th:action="@{/account/profile-picture}" method="post" enctype="multipart/form-data">
+        <div class="file-input-container">
+            <input type="file" name="imageFile" accept="image/*" required />
+        </div>
+        <br>
+        <button type="submit">Upload</button>
+    </form>
+
+    <!-- Success/Error Messages -->
+    <div th:if="${error}" class="error-message">
+        <p th:text="${error}"></p>
+    </div>
+    <div th:if="${success}" class="success-message">
+        <p th:text="${success}"></p>
+    </div>
+</div>
+</body>
+</html>

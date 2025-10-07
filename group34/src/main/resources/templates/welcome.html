@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-spring-security">
+<head>
+    <title>Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white; /* Set background to white */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+
+        .navbar {
+            background-color: #007bff;
+            padding: 1rem;
+            width: calc(100% - 250px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 250px;
+            box-sizing: border-box;
+        }
+
+        .navbar .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            color: black;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            border-right: 1px solid #ddd;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar a {
+            color: black;
+            text-decoration: none;
+            padding: 10px;
+            display: block;
+            border-radius: 4px;
+        }
+
+        .sidebar a:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* Flexbox to push "Settings" and "Account Management" to the bottom */
+        .sidebar-links {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1; /* Grow to take up available space */
+        }
+
+        .sidebar-links .bottom-links {
+            margin-top: auto; /* Push these links to the bottom */
+        }
+
+        /* Ensure locked "My Locker" is aligned with the other links */
+        .sidebar-links span {
+            display: block;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: left;
+            color: gray;
+            cursor: not-allowed;
+            background-color: rgba(0, 0, 0, 0.05); /* Light gray background to indicate it's disabled */
+        }
+
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            display: flex;
+            justify-content: flex-start; /* Align content to the left */
+            align-items: flex-start;
+            flex-direction: column;
+            text-align: left;
+            padding: 80px 20px 20px;
+        }
+
+        .welcome-container {
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 100%;
+            position: absolute;
+            top: 80px;
+            left: 270px;
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <h2>Menu</h2>
+    <div class="sidebar-links">
+        <a href="/myCourses">My Courses</a>
+        <a href="/courses">All Courses</a>
+        <a href="/friends">My Friends</a>
+        <a href="/search">Search Users</a>
+        <a href="/myProfile">My Profile</a>
+        <a href="/leaderboard">Leaderboard</a>
+
+        <!-- "My Locker" link, disabled when locked -->
+        <a th:if="${lockerUnlocked}" href="/locker">My Locker</a>
+        <span th:if="${!lockerUnlocked}">My Locker</span>
+
+        <div class="bottom-links">
+            <a href="/account">Account Management</a>
+        </div>
+    </div>
+</div>
+
+<nav class="navbar">
+    <a href="/" class="logo">Group 34</a>
+    <div class="nav-links">
+        <a href="/welcome" sec:authorize="isAuthenticated()">Dashboard</a>
+        <a href="/login" sec:authorize="!isAuthenticated()">Login</a>
+        <a href="/register" sec:authorize="!isAuthenticated()">Sign Up</a>
+        <a href="/logout" sec:authorize="isAuthenticated()">Logout</a>
+    </div>
+</nav>
+
+<div class="main-content">
+    <div class="welcome-container">
+        <h1>Welcome back, <span th:text="${username}">User</span>!</h1>
+        <p>Take a look at your Dashboard.</p>
+    </div>
+</div>
+</body>
+</html>

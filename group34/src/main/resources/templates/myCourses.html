@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>My Courses</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        .navbar {
+            background-color: #007bff;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 3rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            justify-items: center;
+        }
+
+        .course-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="number"] {
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            align-items: center; /* Horizontally center content */
+            justify-content: center; /* Vertically center content */
+            text-align: center; /* Ensure text is centered inside */
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .course-card h2 {
+            color: #007bff;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .course-card .category {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .course-card .description {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 1rem;
+        }
+
+        .view-course-button {
+            background-color: #007bff;
+            color: white;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .view-course-button:hover {
+            background-color: #0056b3;
+        }
+
+        .progress-input {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .progress-input input[type="number"] {
+            margin-bottom: 0.5rem; /* Space between the input and button */
+        }
+
+        .progress-input button {
+            margin-top: 0.5rem; /* Add space above the button */
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .add-button {
+            background-color: #28a745;
+            color: white;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-button:hover {
+            background-color: #218838;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #28a745;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            font-size: 1.25rem;
+            text-align: center;}
+        .add-button {
+            background-color: #28a745;
+            color: white;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .add-button:hover {
+            background-color: #218838;
+        }
+
+
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <a href="/" class="logo">Group 34</a>
+    <div class="nav-links">
+        <a href="/welcome" sec:authorize="isAuthenticated()">Dashboard</a>
+        <a href="/login" sec:authorize="!isAuthenticated()">Login</a>
+        <a href="/register" sec:authorize="!isAuthenticated()">Sign Up</a>
+        <a href="/logout" sec:authorize="isAuthenticated()">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>Your Enrolled Courses</h1>
+
+    <div class="course-grid">
+        <div th:each="userCourse : ${userCourses}" class="course-card">
+            <h2 th:text="${userCourse.course.title}"></h2>
+            <p class="category" th:text="${userCourse.course.category}"></p>
+            <p class="description" th:text="${userCourse.course.description}"></p>
+            <a th:href="${userCourse.course.link}">
+                <button type="button" class="view-course-button">See Course Here</button>
+            </a>
+            <form th:action="@{/userCourses/updateProgress}" method="post" class="progress-input">
+                <input type="hidden" name="userCourseId" th:value="${userCourse.id}" />
+                <input type="number" name="progress" min="0" max="100" th:value="${userCourse.progress}" style="width: 60px;"/>
+                <button type="submit">Update Progress</button>
+            </form>
+            <p th:text="${userCourse.completed ? 'Completed' : 'Not Completed'}"></p>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(userCourses)}">
+        <p>You are not enrolled in any courses yet.</p>
+    </div>
+
+    <div id="badgePopup" class="popup">
+        🎉 A new badge was unlocked!
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var badgeUnlocked = /*[[${badgeUnlocked}]]*/ null;
+    if (badgeUnlocked) {
+        let popup = document.getElementById("badgePopup");
+        popup.style.display = "block";
+        setTimeout(() => popup.style.display = "none", 3000);
+    }
+    /*]]>*/
+</script>
+
+</body>
+</html>

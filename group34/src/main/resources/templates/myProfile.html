@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+<head>
+    <title>My Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .navbar {
+            background-color: #007bff;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        .navbar .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+        /* Container for the entire profile page */
+        .container {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        /* The box at the top displaying profile pic, username, friend count */
+        .profile-header-box {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            background-color: #fff;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+        .profile-pic {
+            margin-right: 2rem;
+        }
+        .user-info h2 {
+            margin: 0;
+            color: #007bff;
+            font-size: 1.5rem;
+        }
+        .user-info p {
+            margin: 0.3rem 0;
+            font-size: 1rem;
+        }
+        /* Existing stats styling */
+        h1 {
+            text-align: center;
+            color: #007bff;
+        }
+        .stats {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        .stats p {
+            margin: 0.5rem 0;
+        }
+        /* Badges styling */
+        .badges-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            width: 100%;
+        }
+        .badge {
+            width: 150px;
+            height: 150px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .badge img {
+            width: 100%;
+            height: 100%;
+        }
+        /* Notification styling */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .profile-header-box {
+                flex-direction: column;
+                align-items: center;
+            }
+            .profile-pic {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+            .user-info h2 {
+                font-size: 1.25rem;
+            }
+            .badge {
+                width: 120px;
+                height: 120px;
+            }
+        }
+        @media (max-width: 480px) {
+            .user-info h2 {
+                font-size: 1rem;
+            }
+            .badge {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <a href="/" class="logo">Group 34</a>
+    <div class="nav-links">
+        <a href="/welcome" sec:authorize="isAuthenticated()">Dashboard</a>
+        <a href="/login" sec:authorize="!isAuthenticated()">Login</a>
+        <a href="/register" sec:authorize="!isAuthenticated()">Sign Up</a>
+        <a href="/logout" sec:authorize="isAuthenticated()">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <!-- Profile header box with user pic, username, and friend count -->
+    <div class="profile-header-box">
+        <div class="profile-pic">
+            <div th:if="${user.profilePicture != null}">
+                <img th:src="@{/profile-image/{id}(id=${user.id})}"
+                     alt="Profile Picture"
+                     th:style="${'width:120px; height:120px; object-fit:cover; border-radius:50%; border:2px solid ' + (user.profileBorder != null ? user.profileBorder : '#007bff')}"/>
+            </div>
+            <div th:if="${user.profilePicture == null}">
+                <img src="/images/placeholder.png" alt="No Profile Picture"
+                     style="width:120px; height:120px; object-fit:cover; border-radius:50%; border:2px solid #007bff;"/>
+            </div>
+        </div>
+        <div class="user-info">
+            <h2 th:text="${user.username}">Username</h2>
+            <p>Friends: <span th:text="${friendCount}">0</span></p>
+        </div>
+    </div>
+
+    <!-- Stats, badges, etc. -->
+    <h1>My Profile</h1>
+    <div class="stats">
+        <p><strong>Current Points:</strong> <span th:text="${user.points}">0</span></p>
+        <p><strong>Courses Completed:</strong> <span th:text="${user.courseCompletionCount}">0</span></p>
+        <p><strong>Current Learning Streak:</strong> <span th:text="${user.currentStreak}">0</span> day(s)</p>
+    </div>
+    <h2 style="text-align: center;">Achievement Badges</h2>
+    <div class="badges-container">
+        <div th:each="badge : ${allBadges}" class="badge">
+            <img th:src="@{'/images/' + ${earnedBadges.contains(badge.id) ? badge.imageColor : badge.imageGrey}}"
+                 th:title="${badge.description}" alt="Badge"
+                 onerror="this.onerror=null; this.src='/images/default_badge.png'"/>
+        </div>
+    </div>
+    <!-- Flash message if a badge was just unlocked -->
+    <div th:if="${badgeUnlocked}" id="flashMessage" style="display:none;" th:text="${badgeUnlocked}"></div>
+</div>
+
+<!-- Pop-up notification -->
+<div id="badgeNotification" class="notification"></div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let messageElem = document.getElementById("flashMessage");
+        if (messageElem && messageElem.textContent.trim().length > 0) {
+            let notification = document.getElementById("badgeNotification");
+            notification.textContent = messageElem.textContent;
+            notification.style.display = "block";
+            setTimeout(() => { notification.style.display = "none"; }, 3000);
+        }
+    });
+</script>
+</body>
+</html>
